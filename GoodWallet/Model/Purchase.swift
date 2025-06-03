@@ -1,0 +1,42 @@
+//
+//  Purchase.swift
+//  GoodWallet
+//
+//  Created by 塩入愛佳 on 2025/06/02.
+//
+
+import Foundation
+import SwiftData
+
+
+@Model
+final class Purchase {
+    var id: UUID
+    var name: String
+    var date: Date
+    var price: Int
+    var rating: Int
+    var memo: String?
+    @Relationship(deleteRule: .nullify) var tags: [Tag]
+    var photoURLs: [String]
+
+    init(
+        id: UUID = UUID(),
+        name: String = "",
+        date: Date = Date.now,
+        price: Int = 0,
+        rating: Int = 0,
+        memo: String? = nil,
+        tags: [Tag] = [],
+        photoURLs: [String] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.date = date
+        self.price = price
+        self.rating = rating
+        self.memo = memo
+        self.tags = tags
+        self.photoURLs = photoURLs
+    }
+}
