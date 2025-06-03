@@ -3,6 +3,7 @@ import SwiftUI
 
 // ⬇︎コードを追加
 extension Color {
+    
     static let customAccentColor = Color("AccentColor")
     static let customBackgroundColor = Color("BackgroundColor")
     static let customLineColor = Color("LineColor")
@@ -15,4 +16,5 @@ extension Color {
     static let customTokimekiColor = Color("Tokimeki")
     static let customWaiwaiColor = Color("Waiwai")
     static let customWakuwakuColor = Color("Wakuwaku")
+    
 }
