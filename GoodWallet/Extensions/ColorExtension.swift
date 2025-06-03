@@ -16,5 +16,6 @@ extension Color {
     static let customTokimekiColor = Color("Tokimeki")
     static let customWaiwaiColor = Color("Waiwai")
     static let customWakuwakuColor = Color("Wakuwaku")
+    static let customNumColor = Color("NumColor")
     
 }
