@@ -12,6 +12,9 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topTrailing) {
+                Color("BackgroundColor")
+                    .ignoresSafeArea()
+                
                 VStack(spacing: 10) {
                     Spacer().frame(height: 50)
                     
@@ -29,9 +32,9 @@ struct HomeView: View {
                 })
                 .padding(.bottom, 750)
                 .padding(.trailing, 20)
-                .fullScreenCover(isPresented: $isPresentingInput) {
-                    InputFlowView()
-                }
+            }
+            .navigationDestination(isPresented: $isPresentingInput) {
+                InputStep1View()
             }
         }
     }
