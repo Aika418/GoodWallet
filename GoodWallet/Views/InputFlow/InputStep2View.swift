@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: – Tag Model
 struct EnrichTag: Identifiable, Hashable {
@@ -39,6 +40,8 @@ struct InputStep2View: View {
     /// 3 列・セル間 12pt でギュッと並べる
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 3)
 
+    @Bindable var purchase: Purchase
+
     var body: some View {
         VStack(spacing: 24) {
             // タイトル
@@ -65,7 +68,7 @@ struct InputStep2View: View {
             Spacer()
 
             // 次へボタン
-            NavigationLink(destination: InputStep3View()) {
+            NavigationLink(destination: InputStep3View(purchase: purchase, selectedEnrichTags: selected)) {
                 Text("次へ")
                     .font(.headline)
                     .foregroundColor(.white)
@@ -134,6 +137,6 @@ struct TagSquareView: View {
 
 #Preview {
     NavigationStack {
-        InputStep2View()
+        InputStep2View(purchase: Purchase())
     }
 }

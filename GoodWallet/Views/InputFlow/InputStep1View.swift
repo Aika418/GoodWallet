@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import PhotosUI
+import SwiftData
 
 struct InputStep1View: View {
 
@@ -17,6 +18,7 @@ struct InputStep1View: View {
     @State private var image: Image?
 
     @Environment(\.dismiss) private var dismiss
+    @Bindable var purchase: Purchase
 
     var body: some View {
         ScrollView {
@@ -40,7 +42,7 @@ struct InputStep1View: View {
                 fieldLabel("日付")
                 DatePicker(
                     "",
-                    selection: $pickedDate,
+                    selection: $purchase.date,
                     displayedComponents: [.date]
                 )
                 .datePickerStyle(.compact)
@@ -52,25 +54,28 @@ struct InputStep1View: View {
             // 行：商品名
             HStack {
                 fieldLabel("商品名")
-                TextField("", text: $name)
+                TextField("", text: $purchase.name)
                     .textFieldStyle(.roundedBorder)
             }
 
             // 行：値段
             HStack {
                 fieldLabel("値段")
-                TextField("", text: $price)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
+                TextField("", text: Binding(
+                    get: { String(purchase.price) },
+                    set: { purchase.price = Int($0) ?? purchase.price }
+                ))
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
             }
 
             // 行：満足度
             HStack {
                 fieldLabel("満足度")
                 ForEach(1...5, id: \.self) { idx in
-                    Image(systemName: idx <= rating ? "star.fill" : "star")
-                        .foregroundColor(idx <= rating ? .yellow : .gray.opacity(0.4))
-                        .onTapGesture { rating = idx }
+                    Image(systemName: idx <= purchase.rating ? "star.fill" : "star")
+                        .foregroundColor(idx <= purchase.rating ? .yellow : .gray.opacity(0.4))
+                        .onTapGesture { purchase.rating = idx }
                 }
             }
 
@@ -102,7 +107,7 @@ struct InputStep1View: View {
 
             HStack {
                 Spacer()
-                NavigationLink(destination: InputStep2View()) {
+                NavigationLink(destination: InputStep2View(purchase: purchase)) {
                     Text("次へ")
                         .font(.headline)
                         .foregroundColor(.white)
@@ -126,5 +131,5 @@ struct InputStep1View: View {
 }
 
 #Preview {
-    NavigationStack { InputStep1View() }
+    NavigationStack { InputStep1View(purchase: Purchase()) }
 }

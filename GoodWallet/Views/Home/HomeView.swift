@@ -5,9 +5,11 @@
 //  Created by 塩入愛佳 on 2025/06/03.
 //
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
     @State private var navPath = NavigationPath()
+    @Query var purchases: [Purchase]
 
     var body: some View {
         NavigationStack(path: $navPath) {
@@ -35,20 +37,16 @@ struct HomeView: View {
             }
             // ルート enum に応じた遷移先
             .navigationDestination(for: AppRoute.self) { route in
-                switch route {
-                case .inputStep1:
-                    InputStep1View()
-                case .inputStep2:
-                    InputStep2View()
-                case .inputStep3:
-                    InputStep3View()
-                default:
-                    // AppRouteの他のケース（例: .celebration）はここで処理しない
+                if case .inputStep1 = route {
+                    let purchase = Purchase()
+                    InputStep1View(purchase: purchase)
+                } else {
                     EmptyView()
                 }
             }
         } // end NavigationStack
         .environment(\.navigationPath, $navPath)
+
     }
 }
 

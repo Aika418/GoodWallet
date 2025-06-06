@@ -6,16 +6,19 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct InputStep3View: View {
 
     // MARK: - State
-    @State private var reason: String  = ""
-    @State private var feeling: String = ""
     @State private var isShowingCelebration = false
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.navigationPath) private var navPath
+    @Environment(\.modelContext) private var modelContext
+
+    @Bindable var purchase: Purchase
+    let selectedEnrichTags: Set<EnrichTag>
 
     // MARK: - Body
     var body: some View {
@@ -29,19 +32,28 @@ struct InputStep3View: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("どうして購入しましたか？")
                         .font(.body)
-                    memoEditor(text: $reason)
+                    memoEditor(text: $purchase.reason)
                 }
 
                 // ───────── 気持ち ─────────
                 VStack(alignment: .leading, spacing: 8) {
                     Text("今どんな気持ちですか？")
                         .font(.body)
-                    memoEditor(text: $feeling)
+                    memoEditor(text: $purchase.feeling)
                 }
 
                 // ───────── 投資ボタン ─────────
                 Button {
                     // データ保存を行う処理をここに追加
+
+                    // EnrichTagをTagモデルに変換してpurchase.tagsに設定
+                    purchase.tags = selectedEnrichTags.map { enrichTag in
+                        Tag(name: enrichTag.title, colorHex: enrichTag.color.toHex() ?? "")
+                    }
+
+                    // PurchaseオブジェクトをModelContextに挿入（保存）
+                    modelContext.insert(purchase)
+
                     isShowingCelebration = true
                 } label: {
                     Text("投資")
@@ -73,8 +85,14 @@ struct InputStep3View: View {
 
     // メモ入力用 TextEditor (共通)
     @ViewBuilder
-    private func memoEditor(text: Binding<String>) -> some View {
-        TextEditor(text: text)
+    private func memoEditor(text: Binding<String?>) -> some View {
+        // Binding<String?> を Binding<String> に変換（nilの場合は""を使用）
+        let nonOptionalText = Binding<String>(
+            get: { text.wrappedValue ?? "" },
+            set: { text.wrappedValue = $0.isEmpty ? nil : $0 } // 空文字の場合はnilに戻す
+        )
+
+        TextEditor(text: nonOptionalText)
             .frame(height: 110)
             .padding(8)
             .background(Color.white)
@@ -88,7 +106,8 @@ struct InputStep3View: View {
 
 #Preview {
     NavigationStack {
-        InputStep3View()
+        InputStep3View(purchase: Purchase(), selectedEnrichTags: [])
             .environment(\.navigationPath, .constant(NavigationPath()))
+            .modelContainer(for: Purchase.self)
     }
 }

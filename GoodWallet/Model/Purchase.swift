@@ -17,6 +17,8 @@ final class Purchase {
     var price: Int
     var rating: Int
     var memo: String?
+    var reason: String?
+    var feeling: String?
     @Relationship(deleteRule: .nullify) var tags: [Tag]
     var photoURLs: [String]
 
@@ -27,6 +29,8 @@ final class Purchase {
         price: Int = 0,
         rating: Int = 0,
         memo: String? = nil,
+        reason: String? = nil,
+        feeling: String? = nil,
         tags: [Tag] = [],
         photoURLs: [String] = []
     ) {
@@ -36,6 +40,8 @@ final class Purchase {
         self.price = price
         self.rating = rating
         self.memo = memo
+        self.reason = reason
+        self.feeling = feeling
         self.tags = tags
         self.photoURLs = photoURLs
     }
