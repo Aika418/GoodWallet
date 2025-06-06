@@ -7,10 +7,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var isPresentingInput = false
+    @State private var navPath = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navPath) {
             ZStack(alignment: .topTrailing) {
                 Color("BackgroundColor")
                     .ignoresSafeArea()
@@ -28,15 +28,27 @@ struct HomeView: View {
 
                 // FloatingButtonを右上に配置
                 FloatingButton(action: {
-                    isPresentingInput = true
+                    navPath.append(AppRoute.inputStep1)
                 })
                 .padding(.bottom, 750)
                 .padding(.trailing, 20)
             }
-            .navigationDestination(isPresented: $isPresentingInput) {
-                InputStep1View()
+            // ルート enum に応じた遷移先
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .inputStep1:
+                    InputStep1View()
+                case .inputStep2:
+                    InputStep2View()
+                case .inputStep3:
+                    InputStep3View()
+                default:
+                    // AppRouteの他のケース（例: .celebration）はここで処理しない
+                    EmptyView()
+                }
             }
-        }
+        } // end NavigationStack
+        .environment(\.navigationPath, $navPath)
     }
 }
 

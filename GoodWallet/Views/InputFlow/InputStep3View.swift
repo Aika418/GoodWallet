@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+
 struct InputStep3View: View {
 
     // MARK: - State
     @State private var reason: String  = ""
     @State private var feeling: String = ""
-    @State private var pushCelebration = false       // Navigation trigger
+    @State private var isShowingCelebration = false
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.navigationPath) private var navPath
 
     // MARK: - Body
     var body: some View {
@@ -40,7 +42,7 @@ struct InputStep3View: View {
                 // ───────── 投資ボタン ─────────
                 Button {
                     // データ保存を行う処理をここに追加
-                    pushCelebration = true
+                    isShowingCelebration = true
                 } label: {
                     Text("投資")
                         .font(.title)
@@ -60,13 +62,13 @@ struct InputStep3View: View {
                 .padding(.bottom, 60)   // 下余白を広げてボタンを上へ
             }
             .padding(.horizontal, 24)
-
-
-            // ───────── 画面遷移 (右→左) ─────────
-            NavigationLink("", destination: CelebrationView(), isActive: $pushCelebration)
-                .opacity(0) // Hidden
         }
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $isShowingCelebration) {
+            CelebrationView(onFinish: {
+                navPath?.wrappedValue = NavigationPath()
+            })
+        }
     }
 
     // メモ入力用 TextEditor (共通)
@@ -87,5 +89,6 @@ struct InputStep3View: View {
 #Preview {
     NavigationStack {
         InputStep3View()
+            .environment(\.navigationPath, .constant(NavigationPath()))
     }
 }
