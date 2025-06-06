@@ -20,7 +20,20 @@ final class Purchase {
     var reason: String?
     var feeling: String?
     @Relationship(deleteRule: .nullify) var tags: [Tag]
-    var photoURLs: [String]
+    var photoURLsData: Data?
+
+    @Transient
+    var photoURLs: [String] {
+        get {
+            guard let photoURLsData = photoURLsData else { return [] }
+            let decoder = JSONDecoder()
+            return (try? decoder.decode([String].self, from: photoURLsData)) ?? []
+        }
+        set {
+            let encoder = JSONEncoder()
+            photoURLsData = try? encoder.encode(newValue)
+        }
+    }
 
     init(
         id: UUID = UUID(),

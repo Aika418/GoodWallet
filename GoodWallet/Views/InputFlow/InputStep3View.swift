@@ -20,6 +20,19 @@ struct InputStep3View: View {
     @Bindable var purchase: Purchase
     let selectedEnrichTags: Set<EnrichTag>
 
+    // EnrichTagのタイトルとAsset Catalogの色名のマッピング
+    private let tagColorNameMapping: [String: String] = [
+        "まなび": "Manabi",
+        "らくちん": "Rakuchin",
+        "ほっこり": "Hokkori",
+        "わいわい": "Waiwai",
+        "すこやか": "Sukoyaka",
+        "わくわく": "Wakuwaku",
+        "きらり": "Kirari",
+        "ときめき": "Tokimeki",
+        "おすそわけ": "Osusowake"
+    ]
+
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -47,8 +60,31 @@ struct InputStep3View: View {
                     // データ保存を行う処理をここに追加
 
                     // EnrichTagをTagモデルに変換してpurchase.tagsに設定
-                    purchase.tags = selectedEnrichTags.map { enrichTag in
-                        Tag(name: enrichTag.title, colorHex: enrichTag.color.toHex() ?? "")
+                    var purchaseTags: [Tag] = []
+                    for enrichTag in selectedEnrichTags {
+                        let tagName = enrichTag.title
+                        let tagColorName = tagColorNameMapping[tagName] ?? "Gray"
+                        
+                        // 同じ名前のTagが既に存在するかをクエリで確認
+                        var descriptor = FetchDescriptor<Tag>(predicate: #Predicate { $0.name == tagName })
+                        descriptor.fetchLimit = 1 // 1つ見つかれば十分
+                        
+                        if let existingTag = try? modelContext.fetch(descriptor).first {
+                            // 既存のTagがあればそれを使用
+                            purchaseTags.append(existingTag)
+                        } else {
+                            // 存在しない場合は新しいTagを作成して挿入
+                            let newTag = Tag(name: tagName, colorName: tagColorName)
+                            modelContext.insert(newTag)
+                            purchaseTags.append(newTag)
+                        }
+                    }
+                    purchase.tags = purchaseTags
+
+                    // デバッグプリント: 保存直前のpurchase.tagsの内容を確認
+                    print("保存直前のpurchase.tags:")
+                    for tag in purchase.tags {
+                        print("  名前: \(tag.name), ID: \(tag.id)")
                     }
 
                     // PurchaseオブジェクトをModelContextに挿入（保存）
