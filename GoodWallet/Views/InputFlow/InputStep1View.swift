@@ -100,6 +100,34 @@ struct InputStep1View: View {
                        let ui = UIImage(data: data)
                     {
                         image = Image(uiImage: ui)
+
+                        // 画像データをファイルに保存し、そのパスをpurchase.photoURLsに追加
+                        let fileManager = FileManager.default
+                        // アプリのDocumentsディレクトリのURLを取得
+                        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                            print("Error: Documents directory not found.")
+                            return
+                        }
+
+                        // 一意のファイル名を生成 (例: UUID.jpeg)
+                        let fileName = UUID().uuidString + ".jpeg"
+                        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+
+                        do {
+                            // ファイルにデータを書き込み（JPEG形式で圧縮）
+                            if let jpegData = ui.jpegData(compressionQuality: 0.9) { // 圧縮率0.9でJPEGデータを取得
+                                try jpegData.write(to: fileURL)
+                                // 保存に成功したら、ファイルパスをpurchase.photoURLsに追加
+                                // URLのpathプロパティを使用（String型）
+                                purchase.photoURLs.append(fileURL.path)
+                                print("Successfully saved image to: \(fileURL.path)") // デバッグ出力
+                            } else {
+                                print("Error: Could not get JPEG data from UIImage.")
+                            }
+                        } catch {
+                            // ファイル書き込みエラー
+                            print("Error saving image: \(error.localizedDescription)") // デバッグ出力
+                        }
                     }
                 }
             }

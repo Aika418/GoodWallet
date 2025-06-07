@@ -8,23 +8,12 @@
 import SwiftUI
 import SwiftData
 
-// EnrichTagのタイトルとAsset Catalogの色名のマッピング
-// BubbleChartViewとSingleBubbleViewの両方から参照するためファイルスコープに移動
-private let tagColorNameMapping: [String: String] = [
-    "まなび": "Manabi",
-    "らくちん": "Rakuchin",
-    "ほっこり": "Hokkori",
-    "わいわい": "Waiwai",
-    "すこやか": "Sukoyaka",
-    "わくわく": "Wakuwaku",
-    "きらり": "Kirari",
-    "ときめき": "Tokimeki",
-    "おすそわけ": "Osusowake"
-]
-
 struct BubbleChartView: View {
     // HomeViewで集計済みのデータを受け取る
     let aggregatedTags: [(tagName: String, percentage: Double)]
+    
+    // バブルがタップされたときに実行されるアクション
+    let onTapBubble: (String) -> Void
 
     // Environment for color scheme (useful for hex to Color conversion if needed)
     // @Environment(\.colorScheme) var colorScheme // Likely not needed if using Asset Colors directly
@@ -71,7 +60,8 @@ struct BubbleChartView: View {
                             tagName: data.tagName,
                             percentage: data.percentage,
                             bubbleSize: bubbleSize,
-                            position: CGPoint(x: positionX, y: positionY)
+                            position: CGPoint(x: positionX, y: positionY),
+                            onTap: onTapBubble // アクションをSingleBubbleViewに渡す
                         )
                     }
                 }
@@ -94,7 +84,8 @@ struct BubbleChartView: View {
     return NavigationStack {
         // Pass dummy data to the preview
         // プレビュー用にダミーの集計済みデータを作成して渡す
-        BubbleChartView(aggregatedTags: dummyAggregatedTags)
+        // プレビューではタップアクションは空のクロージャで問題ない
+        BubbleChartView(aggregatedTags: dummyAggregatedTags, onTapBubble: { _ in })
     }
     // PreviewではModelContainerは不要（データを直接渡すため）
 }
@@ -106,6 +97,9 @@ private struct SingleBubbleView: View {
     let percentage: Double
     let bubbleSize: CGFloat
     let position: CGPoint
+    
+    // タップアクション
+    let onTap: (String) -> Void
 
     var body: some View {
         VStack {
@@ -121,6 +115,9 @@ private struct SingleBubbleView: View {
         )
         .clipShape(Circle()) // Ensure text container is clipped to circle
         .position(position) // Position the bubble
+        .onTapGesture { // タップジェスチャーを追加
+            onTap(tagName) // タップされたらアクションを実行
+        }
         // Ensure bubbles stay within bounds (optional, might need adjustments)
         // .offset(x: min(max(-positionX + bubbleSize/2, 0), geometry.size.width - positionX - bubbleSize/2),
         //         y: min(max(-positionY + bubbleSize/2, 0), geometry.size.height - positionY - bubbleSize/2))

@@ -7,6 +7,20 @@
 import SwiftUI
 import SwiftData
 
+// EnrichTagのタイトルとAsset Catalogの色名のマッピング <- この行から下のブロックを削除
+// BubbleChartViewとSingleBubbleViewの両方から参照するためファイルスコープに移動
+// private let tagColorNameMapping: [String: String] = [
+//     "まなび": "Manabi",
+//     "らくちん": "Rakuchin",
+//     "ほっこり": "Hokkori",
+//     "わいわい": "Waiwai",
+//     "すこやか": "Sukoyaka",
+//     "わくわく": "Wakuwaku",
+//     "きらり": "Kirari",
+//     "ときめき": "Tokimeki",
+//     "おすそわけ": "Osusowake"
+// ]
+
 struct HomeView: View {
     @State private var navPath = NavigationPath()
     @Query var purchases: [Purchase]
@@ -23,7 +37,12 @@ struct HomeView: View {
                     Spacer().frame(height: 50)
                     
                     // バブルチャートに渡すデータを事前に集計
-                    BubbleChartView(aggregatedTags: displayedAggregatedTags)
+                    BubbleChartView(aggregatedTags: displayedAggregatedTags, onTapBubble: { tagName in
+                        // バブルがタップされたらTagGalleryViewへ遷移
+                        // 全てのタグ名リストとタップされたタグ名を渡す
+                        let allTagNames = displayedAggregatedTags.map { $0.tagName }
+                        navPath.append(AppRoute.tagGallery(allTagNames: allTagNames, initialTagName: tagName))
+                    })
                         .padding(.horizontal, 16)
                     
                     Spacer()
@@ -43,7 +62,10 @@ struct HomeView: View {
                 if case .inputStep1 = route {
                     let purchase = Purchase()
                     InputStep1View(purchase: purchase)
-                } else {
+                } else if case .tagGallery(let allTagNames, let initialTagName) = route { // TagGalleryルートの場合
+                    TagGalleryView(allTagNames: allTagNames, initialTagName: initialTagName)
+                }
+                else {
                     EmptyView()
                 }
             }

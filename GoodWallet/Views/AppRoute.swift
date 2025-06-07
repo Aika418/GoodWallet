@@ -12,4 +12,5 @@ enum AppRoute: Hashable {
     case inputStep2
     case inputStep3
     case celebration
+    case tagGallery(allTagNames: [String], initialTagName: String)
 }
