@@ -6,9 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct InvestmentTotalCard: View {
-    var totalAmount: Int = 0
+    @Query private var purchases: [Purchase]
+    
+    private var totalAmount: Int {
+        purchases.reduce(0) { $0 + $1.price }
+    }
 
     var body: some View {
         RoundedRectangle(cornerRadius: 16)
@@ -36,4 +41,5 @@ struct InvestmentTotalCard: View {
 
 #Preview {
     InvestmentTotalCard()
+        .modelContainer(for: Purchase.self)
 }

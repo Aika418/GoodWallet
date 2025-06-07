@@ -74,6 +74,12 @@ struct PurchaseDetailView: View {
                     .bold()
                     .padding(.top, 4)
                 
+                // 値段
+                Text("¥\(purchase.price)")
+                    .font(.title)
+                    .foregroundColor(Color.customNumColor)
+                    .padding(.top, 2)
+                
                 // タグ (拡大表示)
                 HStack(spacing: 12) {
                     ForEach(purchase.tags, id: \.id) { tag in

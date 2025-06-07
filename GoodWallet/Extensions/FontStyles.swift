@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-
+//フォント設定
 extension Font {
     static var largeTitle60: Font {
         .custom("RoundedMplus1c-Regular", size: 60, relativeTo: .largeTitle)
