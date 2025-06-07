@@ -14,7 +14,7 @@ struct TagGalleryView: View {
     // 現在表示しているタグ名 (スクロール位置と同期)
     @State private var currentTagName: String?
     // モーダルで表示する選択中の購入アイテム
-    
+    @State private var selectedPurchase: Purchase? = nil
     // 各タグに対応する購入リストを取得するためのクエリ（ここでは単一のクエリで全ての購入を取得し、表示時にフィルタリング）
     @Query private var allPurchases: [Purchase]
     
@@ -35,11 +35,18 @@ struct TagGalleryView: View {
             investmentRatioView
             
             // 各タグに対応する購入リストを縦スクロールで表示
-            PurchaseGalleryScrollView(allPurchases: allPurchases, currentTagName: currentTagName ?? allTagNames.first ?? "")
+            PurchaseGalleryScrollView(
+                allPurchases: allPurchases,
+                currentTagName: currentTagName ?? allTagNames.first ?? "",
+                onSelect: { purchase in selectedPurchase = purchase }
+            )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity) // <- VStack全体にframeを適用
         .background(Color("BackgroundColor").ignoresSafeArea()) // 背景色を適用
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $selectedPurchase) { purchase in
+            PurchaseDetailView(purchase: purchase)
+        }
     }
     
     // MARK: - Computed Properties for View Composition
@@ -75,15 +82,22 @@ struct TagGalleryView: View {
     
     /// 購入ギャラリー部分を生成する算出プロパティ
     private var purchaseGalleryContentView: some View {
-        PurchaseGalleryScrollView(allPurchases: allPurchases, currentTagName: currentTagName ?? allTagNames.first ?? "")
-            .frame(maxHeight: .infinity) // 購入ギャラリーが縦方向に広がるように
+        PurchaseGalleryScrollView(
+            allPurchases: allPurchases,
+            currentTagName: currentTagName ?? allTagNames.first ?? "",
+            onSelect: { purchase in
+                selectedPurchase = purchase
+            }
+        )
+        .frame(maxHeight: .infinity) // 購入ギャラリーが縦方向に広がるように
     }
 }
 
 // 特定のタグの購入アイテムを表示するビュー
 struct PurchaseGalleryScrollView: View {
     let allPurchases: [Purchase]
-    let currentTagName: String // 現在表示すべきタグ名
+    let currentTagName: String
+    let onSelect: (Purchase) -> Void
     
     // 現在のタグに一致する購入のみをフィルタリング
     private var filteredPurchases: [Purchase] {
@@ -112,6 +126,7 @@ struct PurchaseGalleryScrollView: View {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(filteredPurchases) { purchase in
                     PurchaseGalleryItemView(purchase: purchase)
+                        .onTapGesture { onSelect(purchase) }
                 }
             }
             .padding(.horizontal, 8)
@@ -154,7 +169,7 @@ struct PurchaseGalleryItemView: View {
             .clipped()
             
             // 日付
-            Text(purchase.date, style: .date)
+            Text(formatDate(purchase.date))
                 .font(.caption)
                 .foregroundColor(.gray)
             
@@ -301,5 +316,15 @@ extension TagGalleryView {
         }
         // Asset Catalogから色を取得
         return Color(colorName)
+    }
+}
+
+// MARK: - Date Formatting
+extension View {
+    func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy年MM月dd日"
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter.string(from: date)
     }
 }
