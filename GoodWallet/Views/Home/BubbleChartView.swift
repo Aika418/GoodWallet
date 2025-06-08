@@ -20,7 +20,8 @@ struct BubbleChartView: View {
     var body: some View {
         VStack {
             Text("バブルチャート")
-                .font(.headline)
+                .font(.title25)
+            
 
             // 画面の大きさを取得
             GeometryReader { geometry in
@@ -99,7 +100,7 @@ private struct SingleBubbleView: View {
     var body: some View {
         VStack {
             Text(tagName) // タグ名を表示
-                .font(.caption)
+                .font(.caption15)
                 .bold()
                 .foregroundColor(.black)
         }

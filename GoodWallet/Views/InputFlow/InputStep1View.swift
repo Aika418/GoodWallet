@@ -31,7 +31,15 @@ struct InputStep1View: View {
         }
         .background(Color("BackgroundColor").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                CustomBackButton()
+            }
+        }
     }
+        
 
     @ViewBuilder
     private var cardBody: some View {
@@ -40,6 +48,7 @@ struct InputStep1View: View {
             // 行：日付
             HStack(alignment: .center, spacing: 12) {
                 fieldLabel("日付")
+                    .font(.body20)
                 DatePicker(
                     "",
                     selection: $purchase.date,
@@ -49,22 +58,27 @@ struct InputStep1View: View {
                 .environment(\.locale, Locale(identifier: "ja_JP"))
                 .labelsHidden()
                 .padding(.leading, 4)   // ← minor spacing
+                .font(.body20)
             }
 
             // 行：商品名
             HStack {
                 fieldLabel("商品名")
+                    .font(.body20)
                 TextField("", text: $purchase.name)
                     .textFieldStyle(.roundedBorder)
+                    .font(.body20)
             }
 
             // 行：値段
             HStack {
                 fieldLabel("値段")
+                    .font(.body20)
                 TextField("", text: Binding(
                     get: { String(purchase.price) },
                     set: { purchase.price = Int($0) ?? purchase.price }
                 ))
+                .font(.body20)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
             }
@@ -72,6 +86,7 @@ struct InputStep1View: View {
             // 行：満足度
             HStack {
                 fieldLabel("満足度")
+                    .font(.body20)
                 ForEach(1...5, id: \.self) { idx in
                     Image(systemName: idx <= purchase.rating ? "star.fill" : "star")
                         .foregroundColor(idx <= purchase.rating ? .yellow : .gray.opacity(0.4))
@@ -138,11 +153,11 @@ struct InputStep1View: View {
                 Spacer()
                 NavigationLink(destination: InputStep2View(purchase: purchase)) {
                     Text("次へ")
-                        .font(.headline)
+                        .font(.title25)
                         .foregroundColor(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 8)
-                        .background(Capsule().fill(Color.pink.opacity(0.8)))
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 15)
+                        .background(Capsule().fill(Color.customAccentColor.opacity(0.8)))
                 }
                 .buttonStyle(.plain)   // デフォルトの青ハイライトを無効に
             }
@@ -154,7 +169,6 @@ struct InputStep1View: View {
 
     private func fieldLabel(_ text: String) -> some View {
         Text(text)
-            .font(.body)
             .frame(width: 88, alignment: .leading)
     }
 }

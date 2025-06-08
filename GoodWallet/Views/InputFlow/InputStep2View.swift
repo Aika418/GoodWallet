@@ -47,10 +47,9 @@ struct InputStep2View: View {
             // タイトル
             VStack(spacing: 8) {
                 Text("豊かさタグ")
-                    .font(.largeTitle)
-                    .bold()
+                    .font(.title30)
                 Text("3つまで選択してください。")
-                    .font(.body)
+                    .font(.body20)
             }
             .padding(.top, 40)
 
@@ -70,12 +69,12 @@ struct InputStep2View: View {
             // 次へボタン
             NavigationLink(destination: InputStep3View(purchase: purchase, selectedEnrichTags: selected)) {
                 Text("次へ")
-                    .font(.headline)
+                    .font(.title25)
                     .foregroundColor(.white)
-                    .padding(.horizontal, 40)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 15)
                     .background(
-                        Capsule().fill(selected.isEmpty ? Color.gray.opacity(0.4) : Color.pink.opacity(0.9))
+                        Capsule().fill(selected.isEmpty ? Color.gray.opacity(0.4) : Color.customAccentColor.opacity(0.8))
                     )
             }
             .disabled(selected.isEmpty)
@@ -83,6 +82,13 @@ struct InputStep2View: View {
         }
         .background(Color("BackgroundColor").ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                CustomBackButton()
+            }
+        }
     }
 
     /// タグ選択トグル – 最大3個

@@ -33,8 +33,7 @@ struct PurchaseDetailView: View {
                 
                 // 日付
                 Text(formatDate(purchase.date))
-                    .font(.title2)
-                    .bold()
+                    .font(.title30)
                     .padding(.top, 8)
                 
                 // 星
@@ -70,21 +69,20 @@ struct PurchaseDetailView: View {
                 
                 // 商品名
                 Text(purchase.name)
-                    .font(.title2)
-                    .bold()
+                    .font(.title25)
                     .padding(.top, 4)
                 
                 // 値段
                 Text("¥\(purchase.price)")
-                    .font(.title)
+                    .font(.title30)
                     .foregroundColor(Color.customNumColor)
-                    .padding(.top, 2)
+                    .padding(.bottom,10)
                 
                 // タグ (拡大表示)
                 HStack(spacing: 12) {
                     ForEach(purchase.tags, id: \.id) { tag in
                         Text(tag.name)
-                            .font(.headline)                               // 大きめのフォント
+                            .font(.caption15)                               // 大きめのフォント
                             .foregroundColor(.primary)
                             .padding(.horizontal, 16)                      // 幅広めのパディング
                             .padding(.vertical, 8)                         // 高さ広めのパディング
@@ -99,10 +97,11 @@ struct PurchaseDetailView: View {
                 // 購入理由
                 VStack(alignment: .leading, spacing: 4) {
                     Text("購入に至った理由")
-                        .font(.subheadline)
+                        .font(.caption15)
                         .bold()
+                        .padding(.top,15)
                     Text(purchase.reason ?? "")
-                        .font(.body)
+                        .font(.caption15)
                         .padding(8)
                         .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
                         .overlay(
@@ -116,10 +115,10 @@ struct PurchaseDetailView: View {
                 // 気持ち
                 VStack(alignment: .leading, spacing: 4) {
                     Text("気持ち")
-                        .font(.subheadline)
+                        .font(.caption15)
                         .bold()
                     Text(purchase.feeling ?? "")
-                        .font(.body)
+                        .font(.caption15)
                         .padding(8)
                         .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
                         .overlay(

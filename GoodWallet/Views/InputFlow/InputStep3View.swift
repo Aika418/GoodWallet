@@ -46,15 +46,17 @@ struct InputStep3View: View {
                 // ───────── 購入理由 ─────────
                 VStack(alignment: .leading, spacing: 8) {
                     Text("どうして購入しましたか？")
-                        .font(.body)
+                        .font(.body20)
                     memoEditor(text: $purchase.reason)
+                        .font(.body20)
                 }
 
                 // ───────── 気持ち ─────────
                 VStack(alignment: .leading, spacing: 8) {
                     Text("今どんな気持ちですか？")
-                        .font(.body)
+                        .font(.body20)
                     memoEditor(text: $purchase.feeling)
+                        .font(.body20)
                 }
 
                 // ───────── 投資ボタン ─────────
@@ -97,8 +99,7 @@ struct InputStep3View: View {
                     isShowingCelebration = true
                 } label: {
                     Text("投資")
-                        .font(.title)
-                        .bold()
+                        .font(.title30)
                         .foregroundColor(.white)
                         .frame(maxWidth: 140)
                         .padding(.vertical, 14)
@@ -116,6 +117,12 @@ struct InputStep3View: View {
             .padding(.horizontal, 24)
         }
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                CustomBackButton()
+            }
+        }
         .sheet(isPresented: $isShowingCelebration) {
             CelebrationView(onFinish: {
                 navPath?.wrappedValue = NavigationPath()

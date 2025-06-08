@@ -47,9 +47,11 @@ struct HomeView: View {
                 FloatingButton(action: {
                     navPath.append(AppRoute.inputStep1)
                 })
-                .padding(.bottom, 750)
-                .padding(.trailing, 20)
+                .padding(.bottom, 700)
+                .padding(.trailing, 30)
             }
+            .navigationBarBackButtonHidden(false)
+            .navigationBarTitle("", displayMode: .inline)
             // 画面の履歴（path）を使ってどの画面に行くか決める
             .navigationDestination(for: AppRoute.self) { route in
                 //inputStep1の画面に移動するとき、空のPurchaseオブジェクトを渡す

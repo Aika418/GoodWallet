@@ -41,6 +41,14 @@ struct TagGalleryView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity) // <- VStack全体にframeを適用
         .background(Color("BackgroundColor").ignoresSafeArea()) // 背景色を適用
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitle("", displayMode: .inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                CustomBackButton()
+            }
+        }
+
         .sheet(item: $selectedPurchase) { purchase in
             PurchaseDetailView(purchase: purchase)
         }//購入アイテムをタップしたときに詳細画面をモーダルで表示
@@ -69,10 +77,10 @@ struct TagGalleryView: View {
     private var investmentRatioView: some View {
         VStack(spacing: 4) {
             Text("投資比率")
-                .font(.body)
+                .font(.body20)
             // 現在選択されているタグの投資比率を計算して表示
             Text(calculatedInvestmentRatio) // 計算結果を表示
-                .font(.system(size: 80))
+                .font(.largeTitle80)
                 .foregroundColor(currentTagColor) // 現在選択中のタグの色を適用
         }
         .padding(.vertical)
@@ -169,12 +177,12 @@ struct PurchaseGalleryItemView: View {
             
             // 日付
             Text(formatDate(purchase.date))
-                .font(.caption)
+                .font(.caption12)
                 .foregroundColor(.gray)
             
             // 商品名
             Text(purchase.name)
-                .font(.headline)
+                .font(.caption17)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
             
@@ -240,18 +248,21 @@ private struct TagBubbleView: View {
     
     var body: some View {
         Text(tagName)
-            .font(.headline)                      // bigger font
-            .padding(.horizontal, 16)             // wider
-            .padding(.vertical, 8)                // taller
+            .font(.caption17)
+        // bigger font
+            .padding(.horizontal, 19)             // wider
+            .padding(.vertical, 12)                // taller
             .background(
                 Capsule()
+                //背景
                     .fill(isSelected
-                          ? Color.pink.opacity(0.4)
+                          ? Color.customAccentColor.opacity(0.5)
                           : Color.gray.opacity(0.15))
             )
             .overlay(
                 Capsule()
-                    .stroke(isSelected ? Color.pink : Color.clear, lineWidth: 2)
+                //テキスト周り
+                    .stroke(isSelected ? Color.customAccentColor.opacity(0.5) : Color.clear, lineWidth: 2)
             )
             .onTapGesture(perform: onTap)
     }
