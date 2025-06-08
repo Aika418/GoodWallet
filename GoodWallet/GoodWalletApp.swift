@@ -8,12 +8,12 @@
 import SwiftUI
 import SwiftData
 
-@main
+@main //アプリ起動時に最初に実行
 struct GoodWalletApp: App {
-    var body: some Scene {
-        WindowGroup {
+    var body: some Scene { //アプリのUIウィンドウの定義
+        WindowGroup { //メインウィンドウを定義
             HomeView()
         }
-        .modelContainer(for: Purchase.self)
+        .modelContainer(for: Purchase.self)//swiftdata保存のための箱を作る
     }
 }

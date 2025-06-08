@@ -85,7 +85,6 @@ struct CelebrationView: View {
             .padding(.horizontal, 24)
             .padding(.top, 16)
 
-            // ────────── 紙吹雪アイコン ──────────
             VStack {
                 HStack {
                     Spacer()

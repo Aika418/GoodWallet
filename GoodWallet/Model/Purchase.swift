@@ -8,10 +8,10 @@
 import Foundation
 import SwiftData
 
-
+//SwiftDataのデータモデル一件の購入データ
 @Model
 final class Purchase {
-    var id: UUID
+    var id: UUID //一意識別ID
     var name: String
     var date: Date
     var price: Int
@@ -19,14 +19,16 @@ final class Purchase {
     var memo: String?
     var reason: String?
     var feeling: String?
-    @Relationship(deleteRule: .nullify) var tags: [Tag]
+    @Relationship(deleteRule: .nullify) var tags: [Tag]//関連するTagが削除されてもPurchase側はnull（空）になるだけで削除されない。
     var photoURLsData: Data?
 
-    @Transient
+    @Transient //一時的なJSONデータとして保存
     var photoURLs: [String] {
         get {
+            //photoURLsDataがあればJSONDecoderでデコードして文字列配列にして返す
             guard let photoURLsData = photoURLsData else { return [] }
             let decoder = JSONDecoder()
+            //DataをString型としてでこーど
             return (try? decoder.decode([String].self, from: photoURLsData)) ?? []
         }
         set {
@@ -35,6 +37,7 @@ final class Purchase {
         }
     }
 
+    //初期化
     init(
         id: UUID = UUID(),
         name: String = "",

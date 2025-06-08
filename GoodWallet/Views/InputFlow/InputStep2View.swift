@@ -8,13 +8,13 @@
 import SwiftUI
 import SwiftData
 
-// MARK: – Tag Model
+// タグを表す構造体
 struct EnrichTag: Identifiable, Hashable {
     let id: UUID = .init()
     let title: String
     /// 画像アセット名（ある場合はこちらを優先）
     let assetName: String?
-    /// SF Symbols 名（アセットが無い場合のフォールバック）
+    /// アセットが無い場合
     let systemImage: String?
     let color: Color
 }
@@ -32,14 +32,14 @@ let enrichTags: [EnrichTag] = [
     .init(title: "おすそわけ", assetName: "お裾分け",           systemImage: "gift",             color: Color("Osusowake"))
 ]
 
-// MARK: – View
+// 画面
 struct InputStep2View: View {
     // 選択されたタグ最大3つ保持
     @State private var selected: Set<EnrichTag> = []
     
     /// 3 列・セル間 12pt でギュッと並べる
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 3)
-
+//前の画面から受け取ったデータをここで使う
     @Bindable var purchase: Purchase
 
     var body: some View {
@@ -54,7 +54,7 @@ struct InputStep2View: View {
             }
             .padding(.top, 40)
 
-            // Tag Grid
+            //3列のタググリッド
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(enrichTags) { tag in
                     TagSquareView(tag: tag, isSelected: selected.contains(tag))
@@ -97,7 +97,9 @@ struct InputStep2View: View {
 
 // MARK: – Tag Square
 struct TagSquareView: View {
+    //表示するタグのデータ
     let tag: EnrichTag
+    //選択状態
     let isSelected: Bool
 
     var body: some View {
@@ -119,8 +121,10 @@ struct TagSquareView: View {
         )
     }
 
+    
     @ViewBuilder
     private var tagIcon: some View {
+        //画像の表示
         if let asset = tag.assetName {
             Image(asset)
                 .resizable()

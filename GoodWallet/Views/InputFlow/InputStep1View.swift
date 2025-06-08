@@ -94,6 +94,7 @@ struct InputStep1View: View {
                 .frame(width: 200, height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
+            //写真が選ばれたら、データをアプリのDocumentフォルダに保存
             .onChange(of: photoItem) { item in
                 Task {
                     if let data = try? await item?.loadTransferable(type: Data.self),

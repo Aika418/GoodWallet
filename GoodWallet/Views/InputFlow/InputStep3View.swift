@@ -10,14 +10,16 @@ import SwiftData
 
 struct InputStep3View: View {
 
-    // MARK: - State
+    // お祝い画面を表示するかどうか
     @State private var isShowingCelebration = false
-
+    //画面を閉じるための機能を環境変数
     @Environment(\.dismiss) private var dismiss
     @Environment(\.navigationPath) private var navPath
+    //データベースへの保存や読み込みを行う
     @Environment(\.modelContext) private var modelContext
-
+    //前の画面から購入情報を受け取る
     @Bindable var purchase: Purchase
+    //前の画面で選ばれたタグのリスト
     let selectedEnrichTags: Set<EnrichTag>
 
     // EnrichTagのタイトルとAsset Catalogの色名のマッピング
@@ -61,14 +63,16 @@ struct InputStep3View: View {
 
                     // EnrichTagをTagモデルに変換してpurchase.tagsに設定
                     var purchaseTags: [Tag] = []
+                    //選ばれたタグを順番に処理
                     for enrichTag in selectedEnrichTags {
                         let tagName = enrichTag.title
                         let tagColorName = tagColorNameMapping[tagName] ?? "Gray"
                         
                         // 同じ名前のTagが既に存在するかをクエリで確認
+                        //tag.seiftの==メソッド
                         var descriptor = FetchDescriptor<Tag>(predicate: #Predicate { $0.name == tagName })
                         descriptor.fetchLimit = 1 // 1つ見つかれば十分
-                        
+                        //firstで一つだとってくる
                         if let existingTag = try? modelContext.fetch(descriptor).first {
                             // 既存のTagがあればそれを使用
                             purchaseTags.append(existingTag)

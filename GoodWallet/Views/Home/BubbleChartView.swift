@@ -9,53 +9,52 @@ import SwiftUI
 import SwiftData
 
 struct BubbleChartView: View {
-    // HomeViewで集計済みのデータを受け取る
+    //  HomeViewから送られてきたタグデータ（名前と割合）を受け取るための変数
     let aggregatedTags: [(tagName: String, percentage: Double)]
     
     // バブルがタップされたときに実行されるアクション
+    //引数としてタップされたタグ名（String）を渡す仕組み
     let onTapBubble: (String) -> Void
 
-    // Environment for color scheme (useful for hex to Color conversion if needed)
-    // @Environment(\.colorScheme) var colorScheme // Likely not needed if using Asset Colors directly
-
-    // Computed property to process purchases and calculate tag percentages
-    // private var tagPercentages: [(tag: Tag, percentage: Double)] { ... } // 削除
-
-    // Helper function to convert hex string to Color (assuming format #RRGGBB or #AARRGGBB)
-    // This assumes ColorExtension.swift exists and is accessible, otherwise this logic needs to be in an extension here.
-    // private func colorFromHex(_ hex: String) -> Color { ... } // 削除
-
+    //見た目
     var body: some View {
         VStack {
             Text("バブルチャート")
                 .font(.headline)
 
-            // デバッグプリント: 集計されたタグの割合
-            // print("tagPercentages (集計後): \(tagPercentages)") // 詳細な出力が必要な場合アンコメント
-
-            // Use GeometryReader to get the available size for drawing
+            // 画面の大きさを取得
             GeometryReader { geometry in
+                //バブルを重ねる
                 ZStack {
-                    // Draw bubbles for each tag percentage
-                    ForEach(Array(aggregatedTags.enumerated()), id: \.element.tagName) { index, data in // 集計済みのデータを使用し、tagNameをidに指定
-                        // Calculate bubble size and position
+                    //タグデータを順番に取り出して、1個ずつバブルを描画
+                    //enumerated() を使うことで index（番号）も一緒に取り出す
+                    //ArrayでForEachが使えるように一度配列に変換
+                    //.element→enumerated（）で取り出したデータの「要素部分」（番号ではなくデータ本体）
+                    //    .tagName → その中のタグ名を識別子に指定しています。
+                    //タグ名が同じものは一意に扱うようにしてね！**という指示になります。
+                    ForEach(Array(aggregatedTags.enumerated()), id: \.element.tagName) { index, data in //index → データの順番（0,1,2…）data → タグ名と割合のデータそのもの
+                        // バブルのサイズ
                         let minSize: CGFloat = 50
                         let maxSize: CGFloat = min(geometry.size.width, geometry.size.height) * 0.9 // 最大サイズをさらに調整 (0.9)
 
-                        // 割合に基づいてバブルサイズを計算。最小サイズを保証し、NaN対策も行う。
-                        let clampedPercentage = max(0, min(1, data.percentage)) // 割合を0から1の間にクランプ
+                        // データの割合が0〜1の範囲を超えないように制限
+                        let clampedPercentage = max(0, min(1, data.percentage))
+                        //  最小サイズから最大サイズまでの範囲で、バブルの大きさを決める
                         let calculatedSize = minSize + (maxSize - minSize) * CGFloat(clampedPercentage)
                         
-                        // 計算結果がNaNでないことを確認し、不正な場合は最小サイズを使用
+                        // サイズがNaN（計算できない数値）になった場合は、最小サイズ
                         let bubbleSize = calculatedSize.isNaN ? minSize : calculatedSize
-
+                        //バブルの中心位置を画面の中央に設定
                         let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                        //バブルを並べる円の半径 バブルが一個なら半径0
                         let radius: CGFloat = aggregatedTags.count == 1 ? 0 : min(geometry.size.width, geometry.size.height) * 0.3
-
+                        //各バブルを円形に並べるための角度を計算
                         let angle = 2 * .pi / CGFloat(aggregatedTags.count) * CGFloat(index)
+                        // 角度と半径を使ってX座標・Y座標を計算
                         let positionX = center.x + radius * cos(angle)
                         let positionY = center.y + radius * sin(angle)
 
+                        //引数を渡して描画
                         SingleBubbleView(
                             tagName: data.tagName,
                             percentage: data.percentage,
@@ -66,15 +65,14 @@ struct BubbleChartView: View {
                     }
                 }
             }
-            .frame(height: 300) // Give the chart a fixed height
+            .frame(height: 300) //バブルチャートの高さ
         }
     }
 }
 
 #Preview {
-    // Create dummy data for preview
+    // プレビュー用データ
     let dummyAggregatedTags: [(tagName: String, percentage: Double)] = [
-        // ダミーデータ例
         (tagName: "わくわく", percentage: 3.0/7.0),
         (tagName: "すこやか", percentage: 2.0/7.0),
         (tagName: "ほっこり", percentage: 1.0/7.0),
@@ -82,46 +80,38 @@ struct BubbleChartView: View {
     ].sorted(by: { $0.percentage > $1.percentage })
     
     return NavigationStack {
-        // Pass dummy data to the preview
-        // プレビュー用にダミーの集計済みデータを作成して渡す
-        // プレビューではタップアクションは空のクロージャで問題ない
         BubbleChartView(aggregatedTags: dummyAggregatedTags, onTapBubble: { _ in })
     }
-    // PreviewではModelContainerは不要（データを直接渡すため）
 }
 
 // MARK: - Single Bubble View
 /// 個々のバブルを描画するヘルパービュー
 private struct SingleBubbleView: View {
+    //外から渡される情報（プロパティ）を定義
     let tagName: String
     let percentage: Double
     let bubbleSize: CGFloat
     let position: CGPoint
     
-    // タップアクション
+    // 親ビュー（BubbleChartView）にタップしたタグ名を伝える
     let onTap: (String) -> Void
 
     var body: some View {
         VStack {
             Text(tagName) // タグ名を表示
-                .font(.caption) // Adjust font size
+                .font(.caption)
                 .bold()
-                .foregroundColor(.black) // Text color inside bubble
+                .foregroundColor(.black)
         }
-        .frame(width: bubbleSize, height: bubbleSize) // Size the text container same as bubble
-        .background(
+        .frame(width: bubbleSize, height: bubbleSize)//バブルの大きさを設定
+        .background(//円の背景を塗る
             Circle()
-                .fill(Color(tagColorNameMapping[tagName] ?? "Gray").opacity(0.7)) // タグ名から色を取得
+                .fill(Color(tagColorNameMapping[tagName] ?? "Gray").opacity(0.7)) 
         )
-        .clipShape(Circle()) // Ensure text container is clipped to circle
-        .position(position) // Position the bubble
+        .clipShape(Circle()) // テキストなどが円形の背景の外にはみ出さないように
+        .position(position) // 画面上のどの位置に置くかを決める
         .onTapGesture { // タップジェスチャーを追加
-            onTap(tagName) // タップされたらアクションを実行
+            onTap(tagName) // 親ビューにタグ名を返す
         }
-        // Ensure bubbles stay within bounds (optional, might need adjustments)
-        // .offset(x: min(max(-positionX + bubbleSize/2, 0), geometry.size.width - positionX - bubbleSize/2),
-        //         y: min(max(-positionY + bubbleSize/2, 0), geometry.size.height - positionY - bubbleSize/2))
-        // Simple layering by drawing order (larger first or smaller first might look better depending on opacity)
-        // Current sort is largest percentage first.
     }
 }

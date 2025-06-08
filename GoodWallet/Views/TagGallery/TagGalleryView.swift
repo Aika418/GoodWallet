@@ -17,7 +17,7 @@ struct TagGalleryView: View {
     @State private var selectedPurchase: Purchase? = nil
     // 各タグに対応する購入リストを取得するためのクエリ（ここでは単一のクエリで全ての購入を取得し、表示時にフィルタリング）
     @Query private var allPurchases: [Purchase]
-    
+    //ビューを作る時に全タグと最初に表示するタグ名を受け取る
     init(allTagNames: [String], initialTagName: String) {
         self.allTagNames = allTagNames
         // 初期表示するタグ名を設定
@@ -27,14 +27,11 @@ struct TagGalleryView: View {
     var body: some View {
         VStack(spacing: 0) { // <- 一番外側のVStack
             Spacer().frame(height: 20)          // ← 新しく追加：上余白
-            
             // 横スクロール可能なタグ名のリスト
             tagNamesScrollView
-            
             // 投資比率の表示
             investmentRatioView
-            
-            // 各タグに対応する購入リストを縦スクロールで表示
+            // 各タグに対応する購入リストを縦スクロールで表示 商品一覧を表示
             PurchaseGalleryScrollView(
                 allPurchases: allPurchases,
                 currentTagName: currentTagName ?? allTagNames.first ?? "",
@@ -46,7 +43,7 @@ struct TagGalleryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $selectedPurchase) { purchase in
             PurchaseDetailView(purchase: purchase)
-        }
+        }//購入アイテムをタップしたときに詳細画面をモーダルで表示
     }
     
     // MARK: - Computed Properties for View Composition
@@ -57,6 +54,7 @@ struct TagGalleryView: View {
             HStack(spacing: 8) {
                 ForEach(allTagNames, id: \.self) { tagName in
                     // 個々のタグバブル表示をヘルパービューに切り出し
+                    //tag.seiftの==メソッド
                     TagBubbleView(tagName: tagName, isSelected: tagName == currentTagName) {
                         withAnimation { currentTagName = tagName }
                     }
@@ -102,6 +100,7 @@ struct PurchaseGalleryScrollView: View {
     // 現在のタグに一致する購入のみをフィルタリング
     private var filteredPurchases: [Purchase] {
         let filtered = allPurchases.filter { purchase in
+            //tag.seiftの==メソッド
             purchase.tags.contains(where: { $0.name == currentTagName })
         }
         
