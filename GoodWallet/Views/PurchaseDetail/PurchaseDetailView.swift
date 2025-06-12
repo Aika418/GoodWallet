@@ -49,22 +49,25 @@ struct PurchaseDetailView: View {
                 Group {
                     if let firstPhotoURLString = purchase.photoURLs.first,
                        let uiImage = UIImage(contentsOfFile: firstPhotoURLString) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFill()
-                            .aspectRatio(1, contentMode: .fit)              // 正方形比率を保つ
-                            .frame(maxWidth: UIScreen.main.bounds.width * 0.6)
-                            .clipped()
-                            .cornerRadius(16)
+                        GeometryReader { geometry in
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geometry.size.width, height: geometry.size.width)
+                                .clipped()
+                                .cornerRadius(16)
+                        }
+                        .aspectRatio(1, contentMode: .fit)
                     } else {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(1, contentMode: .fit)              // 正方形比率を保つ
-                            .frame(maxWidth: UIScreen.main.bounds.width * 0.5)
-                            .overlay(
-                                Text("画像なし")
-                                    .foregroundColor(.gray)
-                            )
+                        GeometryReader { geometry in
+                            Image("花")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geometry.size.width, height: geometry.size.width)
+                                .clipped()
+                                .cornerRadius(16)
+                        }
+                        .aspectRatio(1, contentMode: .fit)
                     }
                 }
                 .padding(.top, 4)

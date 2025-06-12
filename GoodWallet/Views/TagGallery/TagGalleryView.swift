@@ -143,33 +143,27 @@ struct PurchaseGalleryItemView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // 画像の表示エリア
-            Group { // 画像表示と「画像なし」プレースホルダーをGroupでまとめる
-                if let firstPhotoURLString = purchase.photoURLs.first {
-                    if let uiImage = UIImage(contentsOfFile: firstPhotoURLString) {
+            GeometryReader { geometry in
+                Group {
+                    if let firstPhotoURLString = purchase.photoURLs.first,
+                       let uiImage = UIImage(contentsOfFile: firstPhotoURLString) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
+                            .frame(width: geometry.size.width, height: geometry.size.width)
+                            .clipped()
+                            .cornerRadius(8)
                     } else {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.gray.opacity(0.2))
-                            .overlay(
-                                Text("画像なし")
-                                    .foregroundColor(.gray)
-                            )
+                        Image("花")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: geometry.size.width, height: geometry.size.width)
+                            .clipped()
+                            .cornerRadius(8)
                     }
-                } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                        .overlay(
-                            Text("画像なし")
-                                .foregroundColor(.gray)
-                        )
                 }
             }
-            .aspectRatio(1, contentMode: .fit)   // 正方形比率を保ちつつ可変
-            .cornerRadius(8)
-            .clipped()
+            .aspectRatio(1, contentMode: .fit)
             
             // 日付
             Text(formatDate(purchase.date))
