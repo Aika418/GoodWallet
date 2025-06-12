@@ -15,6 +15,7 @@
 		3C0C40B72DEEA6FD00C88D35 /* MPLUSRounded1c-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C0C40AF2DEEA6FD00C88D35 /* MPLUSRounded1c-Medium.ttf */; };
 		3C0C40B82DEEA6FD00C88D35 /* MPLUSRounded1c-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C0C40B12DEEA6FD00C88D35 /* MPLUSRounded1c-Thin.ttf */; };
 		3C0C40BA2DEEA73100C88D35 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3C0C40B92DEEA73100C88D35 /* OFL.txt */; };
+		3C551BAC2DFAC16000CB11E6 /* Confetti in Frameworks */ = {isa = PBXBuildFile; productRef = 3C551BAB2DFAC16000CB11E6 /* Confetti */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C551BAC2DFAC16000CB11E6 /* Confetti in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +154,7 @@
 			);
 			name = GoodWallet;
 			packageProductDependencies = (
+				3C551BAB2DFAC16000CB11E6 /* Confetti */,
 			);
 			productName = GoodWallet;
 			productReference = 3C40691D2DEDE2E300226AD2 /* GoodWallet.app */;
@@ -235,6 +238,9 @@
 			);
 			mainGroup = 3C4069142DEDE2E200226AD2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3C551BAA2DFAC16000CB11E6 /* XCRemoteSwiftPackageReference "confetti-swiftui" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3C40691E2DEDE2E300226AD2 /* Products */;
 			projectDirPath = "";
@@ -604,6 +610,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3C551BAA2DFAC16000CB11E6 /* XCRemoteSwiftPackageReference "confetti-swiftui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ottijp/confetti-swiftui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3C551BAB2DFAC16000CB11E6 /* Confetti */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3C551BAA2DFAC16000CB11E6 /* XCRemoteSwiftPackageReference "confetti-swiftui" */;
+			productName = Confetti;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3C4069152DEDE2E200226AD2 /* Project object */;
 }

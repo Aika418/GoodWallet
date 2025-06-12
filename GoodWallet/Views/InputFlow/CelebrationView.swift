@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Confetti
 
 struct CelebrationView: View {
 
@@ -113,6 +114,8 @@ struct CelebrationView: View {
     ]
     
     @State private var message: String
+    /// Show confetti once when the view appears
+    @State private var showConfetti = false
 
     init(onFinish: @escaping () -> Void) {
         self.onFinish = onFinish
@@ -173,6 +176,7 @@ struct CelebrationView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)
+            .onAppear { showConfetti = true }
 
             VStack {
                 HStack {
@@ -198,6 +202,12 @@ struct CelebrationView: View {
                 }
             }
             .padding(32)
+            // ────────── Confetti ──────────
+            if showConfetti {
+                ConfettiView(emissionDuration: 3.0)   // about 2.5 sec
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+            }
         }
         .navigationBarBackButtonHidden(true) // ← ナビバーの戻るを隠す
     }
