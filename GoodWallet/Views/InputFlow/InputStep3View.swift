@@ -60,56 +60,60 @@ struct InputStep3View: View {
                 }
 
                 // ───────── 投資ボタン ─────────
-                Button {
-                    // データ保存を行う処理をここに追加
+                HStack {
+                    Spacer()
+                    Button {
+                        // データ保存を行う処理をここに追加
 
-                    // EnrichTagをTagモデルに変換してpurchase.tagsに設定
-                    var purchaseTags: [Tag] = []
-                    //選ばれたタグを順番に処理
-                    for enrichTag in selectedEnrichTags {
-                        let tagName = enrichTag.title
-                        let tagColorName = tagColorNameMapping[tagName] ?? "Gray"
-                        
-                        // 同じ名前のTagが既に存在するかをクエリで確認
-                        //tag.seiftの==メソッド
-                        var descriptor = FetchDescriptor<Tag>(predicate: #Predicate { $0.name == tagName })
-                        descriptor.fetchLimit = 1 // 1つ見つかれば十分
-                        //firstで一つだとってくる
-                        if let existingTag = try? modelContext.fetch(descriptor).first {
-                            // 既存のTagがあればそれを使用
-                            purchaseTags.append(existingTag)
-                        } else {
-                            // 存在しない場合は新しいTagを作成して挿入
-                            let newTag = Tag(name: tagName, colorName: tagColorName)
-                            modelContext.insert(newTag)
-                            purchaseTags.append(newTag)
+                        // EnrichTagをTagモデルに変換してpurchase.tagsに設定
+                        var purchaseTags: [Tag] = []
+                        //選ばれたタグを順番に処理
+                        for enrichTag in selectedEnrichTags {
+                            let tagName = enrichTag.title
+                            let tagColorName = tagColorNameMapping[tagName] ?? "Gray"
+                            
+                            // 同じ名前のTagが既に存在するかをクエリで確認
+                            //tag.seiftの==メソッド
+                            var descriptor = FetchDescriptor<Tag>(predicate: #Predicate { $0.name == tagName })
+                            descriptor.fetchLimit = 1 // 1つ見つかれば十分
+                            //firstで一つだとってくる
+                            if let existingTag = try? modelContext.fetch(descriptor).first {
+                                // 既存のTagがあればそれを使用
+                                purchaseTags.append(existingTag)
+                            } else {
+                                // 存在しない場合は新しいTagを作成して挿入
+                                let newTag = Tag(name: tagName, colorName: tagColorName)
+                                modelContext.insert(newTag)
+                                purchaseTags.append(newTag)
+                            }
                         }
+                        purchase.tags = purchaseTags
+
+                        // デバッグプリント: 保存直前のpurchase.tagsの内容を確認
+                        print("保存直前のpurchase.tags:")
+                        for tag in purchase.tags {
+                            print("  名前: \(tag.name), ID: \(tag.id)")
+                        }
+
+                        // PurchaseオブジェクトをModelContextに挿入（保存）
+                        modelContext.insert(purchase)
+
+                        isShowingCelebration = true
+                    } label: {
+                        Text("投資")
+                            .font(.title30)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 40)      // 十分な横幅を確保
+                            .padding(.vertical, 14)
+                            .background(
+                                Capsule()
+                                    .fill(Color.customAccentColor.opacity(0.8))
+                            )
+                            .shadow(color: .black.opacity(0.15),
+                                    radius: 6, x: 0, y: 3)
+                            .padding(.top, 50)          // 入力欄との間に余白（狭め）
                     }
-                    purchase.tags = purchaseTags
-
-                    // デバッグプリント: 保存直前のpurchase.tagsの内容を確認
-                    print("保存直前のpurchase.tags:")
-                    for tag in purchase.tags {
-                        print("  名前: \(tag.name), ID: \(tag.id)")
-                    }
-
-                    // PurchaseオブジェクトをModelContextに挿入（保存）
-                    modelContext.insert(purchase)
-
-                    isShowingCelebration = true
-                } label: {
-                    Text("投資")
-                        .font(.title30)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: 140)
-                        .padding(.vertical, 14)
-                        .background(
-                            Capsule()
-                                .fill(Color.customAccentColor.opacity(0.8))
-                        )
-                        .shadow(color: .black.opacity(0.15),
-                                radius: 6, x: 0, y: 3)
-                        .padding(.top, 50)          // 入力欄との間に余白（狭め）
+                    Spacer()
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 60)   // 下余白を広げてボタンを上へ
@@ -140,7 +144,7 @@ struct InputStep3View: View {
         )
 
         TextEditor(text: nonOptionalText)
-            .frame(height: 110)
+            .frame(minHeight: 90, maxHeight: UIScreen.main.bounds.height * 0.18)
             .padding(8)
             .background(Color.white)
             .cornerRadius(12)

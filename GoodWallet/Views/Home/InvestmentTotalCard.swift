@@ -25,7 +25,7 @@ struct InvestmentTotalCard: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 16)
             .stroke(Color.customLineColor, lineWidth: 2)//カードの枠線
-            .frame(height: 200)//カードの高さ
+            .aspectRatio(1.7, contentMode: .fit) //カードの高さ
             .padding(.horizontal, 40)//左右に余白
             .overlay(//カードの上に重ねる
                 //全てのテキストが左側を基準

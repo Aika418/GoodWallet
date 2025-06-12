@@ -19,10 +19,6 @@ struct BubbleChartView: View {
     //見た目
     var body: some View {
         VStack {
-            Text("バブルチャート")
-                .font(.title25)
-            
-
             // 画面の大きさを取得
             GeometryReader { geometry in
                 //バブルを重ねる
@@ -66,7 +62,7 @@ struct BubbleChartView: View {
                     }
                 }
             }
-            .frame(height: 300) //バブルチャートの高さ
+            .aspectRatio(0.75, contentMode: .fit) // 画面幅に応じた正方形サイズ
         }
     }
 }

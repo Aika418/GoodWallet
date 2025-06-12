@@ -50,7 +50,7 @@ struct CelebrationView: View {
         "あなたの\n一歩が輝く",
         "ときどき\n空を見上げて\nみよう",
         "自分を\n甘やかす\n時間も\n大切",
-        "今日は\n“あなたの日”\nにしよう",
+        "今日は\nあなたの日\nにしよう",
         "自分を\n抱きしめる\n気持ちで",
         "ゆっくり\n深呼吸\n心ほぐして",
         "自分に\n「ありがとう」を",
@@ -145,20 +145,30 @@ struct CelebrationView: View {
                 Spacer()
 
                 // ────────── メッセージカード ──────────
-                RoundedRectangle(cornerRadius: 32, style: .continuous)
-                    .fill(Color.white)
-                    .frame(maxWidth: 340, maxHeight: 380)
-                    .overlay(
-                        Text(message)
-                            .font(.largeTitle50)
-                            .bold()
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(accent)
-                            .shadow(color: accent.opacity(0.35), radius: 4, x: 2, y: 2)
-                    )
-                    .offset(y: -40)                                  // up
-                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 5)
-
+                ZStack {
+                    GeometryReader { geometry in
+                        VStack {
+                            Spacer()
+                            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                                .fill(Color.white)
+                                .frame(
+                                    maxWidth: geometry.size.width * 0.9,
+                                    maxHeight: geometry.size.height * 0.6
+                                )
+                                .overlay(
+                                    Text(message)
+                                        .font(.title40)
+                                        .bold()
+                                        .multilineTextAlignment(.center)
+                                        .foregroundStyle(accent)
+                                        .shadow(color: accent.opacity(0.35), radius: 4, x: 2, y: 2)
+                                )
+                                .offset(x: geometry.size.width * 0.05, y: -geometry.size.height * 0.1)
+                                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 5)
+                            Spacer()
+                        }
+                    }
+                }
                 Spacer()
             }
             .padding(.horizontal, 24)
@@ -167,20 +177,24 @@ struct CelebrationView: View {
             VStack {
                 HStack {
                     Spacer()
-                    Image("右上")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)               // さらに大きく
-                        .offset(x: -2, y: 2)                        // 内側へ少しオフセット
+                    GeometryReader { geometry in
+                        Image("右上")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: geometry.size.width * 0.25)
+                            .offset(x: 250, y: 2)                        // 内側へ少しオフセット
+                    }
                 }
                 Spacer()
                 HStack {
-                    Image("左下")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)               // さらに大きく
-                        .offset(x: 2, y: -2)                        // 内側へ少しオフセット
-                    Spacer()
+                    GeometryReader { geometry in
+                        Image("左下")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: geometry.size.width * 0.25)               // さらに大きく
+                            .offset(x: 0, y: 250)                        // 内側へ少しオフセット
+                        Spacer()
+                    }
                 }
             }
             .padding(32)

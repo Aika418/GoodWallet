@@ -25,7 +25,7 @@ struct HomeView: View {
                 
                 VStack(spacing: 10) {//各子要素（バブルチャートやテキストなど）の間に10ポイント分の余白
                     //上に50ポイントの余白
-                    Spacer().frame(height: 50)
+                    Spacer(minLength: 0)
                     // バブルチャートに渡すデータを事前に集計
                     BubbleChartView(aggregatedTags: displayedAggregatedTags, onTapBubble: { tagName in
                         // バブルがタップされたらTagGalleryViewへ遷移

@@ -45,69 +45,84 @@ struct InputStep1View: View {
     private var cardBody: some View {
         VStack(alignment: .leading, spacing: 32) {
 
-            // 行：日付
-            HStack(alignment: .center, spacing: 12) {
-                fieldLabel("日付")
-                    .font(.body20)
-                DatePicker(
-                    "",
-                    selection: $purchase.date,
-                    displayedComponents: [.date]
-                )
-                .datePickerStyle(.compact)
-                .environment(\.locale, Locale(identifier: "ja_JP"))
-                .labelsHidden()
-                .padding(.leading, 4)   // ← minor spacing
-                .font(.body20)
-            }
+            // ===== 1 列目（ラベル）と 2 列目（入力欄）を Grid でそろえる =====
+            Grid(alignment: .leading, horizontalSpacing: 36, verticalSpacing: 24) {
 
-            // 行：商品名
-            HStack {
-                fieldLabel("商品名")
+                // 行：日付
+                GridRow {
+                    fieldLabel("日付")
+                        .font(.body20)
+
+                    DatePicker(
+                        "",
+                        selection: $purchase.date,
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.compact)
+                    .environment(\.locale, Locale(identifier: "ja_JP"))
+                    .labelsHidden()
                     .font(.body20)
-                TextField("", text: $purchase.name)
+                }
+
+                // 行：商品名
+                GridRow {
+                    fieldLabel("商品名")
+                        .font(.body20)
+
+                    TextField("", text: $purchase.name)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.body20)
+                }
+
+                // 行：値段
+                GridRow {
+                    fieldLabel("値段")
+                        .font(.body20)
+
+                    TextField("", text: Binding(
+                        get: { purchase.price == 0 ? "" : String(purchase.price) },
+                        set: { purchase.price = Int($0) ?? 0 }
+                    ))
+                    .font(.body20)
+                    .keyboardType(.numberPad)
                     .textFieldStyle(.roundedBorder)
-                    .font(.body20)
-            }
+                }
 
-            // 行：値段
-            HStack {
-                fieldLabel("値段")
-                    .font(.body20)
-                TextField("", text: Binding(
-                    get: { String(purchase.price) },
-                    set: { purchase.price = Int($0) ?? purchase.price }
-                ))
-                .font(.body20)
-                .keyboardType(.numberPad)
-                .textFieldStyle(.roundedBorder)
-            }
+                // 行：満足度
+                GridRow {
+                    fieldLabel("満足度")
+                        .font(.body20)
 
-            // 行：満足度
-            HStack {
-                fieldLabel("満足度")
-                    .font(.body20)
-                ForEach(1...5, id: \.self) { idx in
-                    Image(systemName: idx <= purchase.rating ? "star.fill" : "star")
-                        .foregroundColor(idx <= purchase.rating ? .yellow : .gray.opacity(0.4))
-                        .onTapGesture { purchase.rating = idx }
+                    HStack(spacing: 4) {
+                        ForEach(1...5, id: \.self) { idx in
+                            Image(systemName: idx <= purchase.rating ? "star.fill" : "star")
+                                .foregroundColor(idx <= purchase.rating ? .yellow : .gray.opacity(0.4))
+                                .onTapGesture { purchase.rating = idx }
+                        }
+                    }
                 }
             }
 
             // 写真選択
             PhotosPicker(selection: $photoItem, matching: .images) {
-                ZStack {
-                    if let img = image {
-                        img.resizable()
-                    } else {
-                        Color.gray.opacity(0.2)
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 36))
-                            .foregroundColor(.gray)
+                GeometryReader { geo in
+                    let side = geo.size.width * 0.55        // 画面幅の 55% を一辺とする正方形
+                    ZStack {
+                        if let img = image {
+                            img.resizable()
+                                .scaledToFill()
+                        } else {
+                            Color.gray.opacity(0.2)
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: side * 0.18))
+                                .foregroundColor(.gray)
+                        }
                     }
+                    .frame(width: side, height: side)       // 可変サイズ
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .frame(maxWidth: .infinity, alignment: .center)   // GeometryReader 内で中央寄せ
                 }
-                .frame(width: 200, height: 200)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(height: UIScreen.main.bounds.width * 0.55)   // GeometryReader の高さ確保
             }
             //写真が選ばれたら、データをアプリのDocumentフォルダに保存
             .onChange(of: photoItem) { item in
@@ -167,10 +182,23 @@ struct InputStep1View: View {
         .padding(24)
     }
 
-    private func fieldLabel(_ text: String) -> some View {
-        Text(text)
-            .frame(width: 88, alignment: .leading)
-    }
+/// ラベル列（「日付」「商品名」…）の幅を統一するためのヘルパー。
+/// `.frame` を使わず、最も長い語を透明オーバーレイとして重ね
+/// 各ラベルを同じレイアウト幅にする。
+private func fieldLabel(_ text: String) -> some View {
+    // この画面で最も長い語。「満足度」を基準に幅を揃える
+    let widestLabel = "満足度"
+
+    return Text(text)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)      // 長過ぎる場合は 70% まで縮小
+        .multilineTextAlignment(.leading)
+        // 透明テキストを重ねてラベル幅を確保
+        .overlay(
+            Text(widestLabel)
+                .opacity(0)           // ← 表示はしない
+        )
+}
 }
 
 #Preview {

@@ -37,8 +37,8 @@ struct InputStep2View: View {
     // 選択されたタグ最大3つ保持
     @State private var selected: Set<EnrichTag> = []
     
-    /// 3 列・セル間 12pt でギュッと並べる
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 3)
+    /// 3 列・セル幅は 112〜140pt で自動調整（画面に余裕があると少し広がる）
+    private let columns = Array(repeating: GridItem(.flexible(minimum: 112, maximum: 140), spacing: 12), count: 3)
 //前の画面から受け取ったデータをここで使う
     @Bindable var purchase: Purchase
 
@@ -109,22 +109,27 @@ struct TagSquareView: View {
     let isSelected: Bool
 
     var body: some View {
-        VStack(spacing: 6) {
-            tagIcon
-                .frame(width: 64, height: 64)   // 少し大きめ
-            Text(tag.title)
-                .font(.subheadline)
-                .foregroundColor(.black)
+        GeometryReader { geometry in
+            VStack(spacing: 6) {
+                tagIcon
+                    .aspectRatio(1, contentMode: .fit)
+                    .padding(12)
+                Text(tag.title)
+                    .font(.subheadline)
+                    .foregroundColor(.black)
+                Spacer(minLength: 0)
+            }
+            .frame(width: geometry.size.width, height: geometry.size.width) // 幅=高さ
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(tag.color.opacity(isSelected ? 0.25 : 0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(tag.color, lineWidth: 3)
+                    )
+            )
         }
-        .frame(width: 112, height: 112)      // タイルを 112×112 に拡大
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(tag.color.opacity(isSelected ? 0.25 : 0.1))          // 内部を淡く
-                .overlay(                                                  // 枠線を追加
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(tag.color, lineWidth: 3)
-                )
-        )
+        .aspectRatio(1, contentMode: .fit) // 親グリッドの幅に合わせて正方形
     }
 
     

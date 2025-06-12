@@ -26,17 +26,13 @@ struct TagGalleryView: View {
     
     var body: some View {
         VStack(spacing: 0) { // <- 一番外側のVStack
-            Spacer().frame(height: 20)          // ← 新しく追加：上余白
+            Spacer(minLength: 20)               // ← minLength で高さの下限を保証（frame を使わない）
             // 横スクロール可能なタグ名のリスト
             tagNamesScrollView
             // 投資比率の表示
             investmentRatioView
             // 各タグに対応する購入リストを縦スクロールで表示 商品一覧を表示
-            PurchaseGalleryScrollView(
-                allPurchases: allPurchases,
-                currentTagName: currentTagName ?? allTagNames.first ?? "",
-                onSelect: { purchase in selectedPurchase = purchase }
-            )
+            purchaseGalleryContentView
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity) // <- VStack全体にframeを適用
         .background(Color("BackgroundColor").ignoresSafeArea()) // 背景色を適用
@@ -171,7 +167,7 @@ struct PurchaseGalleryItemView: View {
                         )
                 }
             }
-            .frame(width: 160, height: 160)   // <-- fixed square
+            .aspectRatio(1, contentMode: .fit)   // 正方形比率を保ちつつ可変
             .cornerRadius(8)
             .clipped()
             

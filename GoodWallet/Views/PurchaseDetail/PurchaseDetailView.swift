@@ -52,13 +52,15 @@ struct PurchaseDetailView: View {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 160, height: 160)
+                            .aspectRatio(1, contentMode: .fit)              // 正方形比率を保つ
+                            .frame(maxWidth: UIScreen.main.bounds.width * 0.6)
                             .clipped()
                             .cornerRadius(16)
                     } else {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.gray.opacity(0.2))
-                            .frame(width: 160, height: 160)
+                            .aspectRatio(1, contentMode: .fit)              // 正方形比率を保つ
+                            .frame(maxWidth: UIScreen.main.bounds.width * 0.5)
                             .overlay(
                                 Text("画像なし")
                                     .foregroundColor(.gray)
